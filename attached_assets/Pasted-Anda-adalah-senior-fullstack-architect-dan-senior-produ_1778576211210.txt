@@ -1,0 +1,508 @@
+Anda adalah senior fullstack architect dan senior product engineer. 
+Tugas Anda adalah membangun aplikasi SaaS modern bernama “AffiTrack” menggunakan:
+
+- Backend: Python Flask
+- Frontend: ReactJS + Vite
+- Database: PostgreSQL
+- ORM: SQLAlchemy
+- Migration: Alembic
+- Styling: TailwindCSS
+- Authentication: JWT Authentication
+- State management frontend: React Query + Context API
+- Charts: Recharts
+- Form validation frontend: React Hook Form + Zod
+- API validation backend: Pydantic / Marshmallow
+- HTTP client frontend: Axios
+- Deployment-ready architecture
+- Docker support
+
+PENTING:
+Project harus dibuat portable dan TIDAK bergantung pada ekosistem internal Replit.
+JANGAN gunakan database internal Replit.
+JANGAN gunakan service proprietary Replit.
+Gunakan struktur project standard industri agar source code dapat:
+- di-clone dari GitHub
+- dijalankan di lokal
+- di-deploy di VPS/Vercel/Railway
+- menggunakan external PostgreSQL provider seperti Neon/Supabase
+
+====================================================
+TUJUAN PRODUK
+====================================================
+
+AffiTrack adalah sistem manajemen bisnis affiliate modern untuk:
+- tracking omzet affiliate perhari
+- tracking biaya iklan
+- tracking profit
+- manajemen karyawan
+- jadwal kerja
+- absensi
+- penggajian
+- monitoring performa bisnis
+
+Website harus terasa seperti SaaS modern profesional dengan UI clean minimalist seperti:
+- Stripe
+- Linear
+- Notion
+- modern SaaS dashboard
+
+Design harus clean, elegan, ringan, cepat, mobile responsive, dan conversion-focused.
+
+====================================================
+ARSITEKTUR PROJECT
+====================================================
+
+Gunakan struktur monorepo sederhana:
+
+affitrack/
+  frontend/
+  backend/
+
+====================================================
+BACKEND REQUIREMENTS (FLASK)
+====================================================
+
+Gunakan:
+- Flask
+- Flask JWT Extended
+- SQLAlchemy
+- Alembic
+- Flask-CORS
+- python-dotenv
+
+Gunakan struktur backend yang clean dan scalable:
+
+backend/
+  app/
+    routes/
+    controllers/
+    services/
+    repositories/
+    models/
+    schemas/
+    middleware/
+    utils/
+    config/
+  migrations/
+  requirements.txt
+  run.py
+
+PENTING:
+JANGAN taruh business logic di routes.
+Pisahkan:
+- route
+- controller
+- service
+- repository
+
+====================================================
+AUTHENTICATION SYSTEM
+====================================================
+
+Buat authentication lengkap menggunakan JWT.
+
+Role user:
+- admin
+- user
+
+Fitur auth:
+- register
+- login
+- logout
+- protected routes
+- JWT access token
+- password hashing
+- role-based access
+
+Admin:
+- bisa mengelola semua data
+- bisa input actual revenue harian
+- bisa mengelola karyawan
+
+User:
+- hanya bisa melihat dashboard dan data tertentu sesuai izin
+
+Tambahkan middleware authorization:
+- admin only
+- authenticated only
+
+====================================================
+DATABASE
+====================================================
+
+Gunakan PostgreSQL external database.
+
+Gunakan .env:
+
+DATABASE_URL=
+JWT_SECRET_KEY=
+
+Gunakan Alembic migration.
+
+Tambahkan database indexes pada:
+- dates
+- foreign keys
+- frequently queried columns
+
+====================================================
+FITUR UTAMA
+====================================================
+
+====================================================
+1. DASHBOARD
+====================================================
+
+Buat dashboard modern dengan cards analytics.
+
+Tampilkan:
+- Revenue hari ini
+- Actual revenue hari ini
+- Total biaya iklan
+- Biaya iklan + 11%
+- Profit hari ini
+- Revenue bulan ini
+- Profit bulan ini
+- Salary bulan ini
+- Expenses bulan ini
+- Profit margin
+- Growth dibanding bulan lalu
+
+Profit formula:
+
+Profit =
+Revenue
+- (Ads + 11%)
+- Salary
+- Expenses
+
+====================================================
+2. TREND ANALYTICS
+====================================================
+
+Buat charts:
+- revenue trend
+- ads trend
+- profit trend
+- monthly growth
+
+Gunakan Recharts.
+
+Support:
+- 7 hari
+- 30 hari
+- bulan ini
+
+====================================================
+3. ACTUAL REVENUE SYSTEM
+====================================================
+
+Admin dapat input:
+- pendapatan affiliate yang tercatat
+- pendapatan aktual asli perhari
+
+Contoh:
+Revenue affiliate tercatat = 1.500.000
+Actual revenue asli = 1.200.000
+
+Dashboard harus menampilkan:
+- revenue tercatat
+- actual revenue
+- selisih
+- profit berdasarkan actual revenue
+
+====================================================
+4. REVENUE MANAGEMENT
+====================================================
+
+CRUD revenue:
+- add
+- edit
+- delete
+- list
+- filter tanggal
+
+Fields:
+- date
+- amount
+- actual_amount
+- product
+- units
+- notes
+
+====================================================
+5. ADS MANAGEMENT
+====================================================
+
+CRUD ads.
+
+Fields:
+- date
+- amount
+- auto calculated fee 11%
+- total ads after fee
+- platform
+- campaign
+- notes
+
+Platforms:
+- Shopee
+- TikTok
+- Meta
+- Google
+- Other
+
+====================================================
+6. EXPENSE MANAGEMENT
+====================================================
+
+CRUD expenses.
+
+Fields:
+- category
+- amount
+- date
+- notes
+
+====================================================
+7. EMPLOYEE MANAGEMENT
+====================================================
+
+CRUD employees.
+
+Fields:
+- name
+- role
+- phone
+- salary type
+- salary amount
+- active status
+
+Salary types:
+- daily
+- monthly
+
+====================================================
+8. SCHEDULE MANAGEMENT
+====================================================
+
+Calendar-based employee schedule system.
+
+Shift:
+- morning
+- afternoon
+- evening
+- full
+
+Features:
+- add shift
+- edit shift
+- delete shift
+- calendar view
+
+====================================================
+9. ATTENDANCE SYSTEM
+====================================================
+
+Attendance tracking.
+
+Status:
+- present
+- absent
+- leave
+
+Features:
+- mark attendance
+- bulk mark present
+- attendance history
+
+====================================================
+10. SALARY SYSTEM
+====================================================
+
+Automatic salary calculation.
+
+Daily employee:
+salary = attendance count × salary rate
+
+Monthly employee:
+salary = prorated based on attendance
+
+====================================================
+11. RECENT ACTIVITY
+====================================================
+
+Activity feed:
+- revenue activity
+- ads activity
+- expenses activity
+- employee activity
+
+====================================================
+12. LANDING PAGE
+====================================================
+
+Buat landing page conversion-focused modern SaaS.
+
+Sections:
+- Hero section
+- Features
+- Analytics preview
+- Testimonials dummy
+- CTA section
+- Footer
+
+Hero headline:
+“Satu Angka Untuk Profit Anda Hari Ini”
+
+CTA:
+- Mulai Gratis
+- Login Dashboard
+
+====================================================
+FRONTEND REQUIREMENTS
+====================================================
+
+Gunakan:
+- ReactJS
+- Vite
+- TailwindCSS
+- React Router
+- Axios
+- React Query
+
+Struktur frontend:
+
+frontend/
+  src/
+    pages/
+    components/
+    layouts/
+    hooks/
+    services/
+    context/
+    routes/
+    utils/
+    types/
+
+====================================================
+UI/UX REQUIREMENTS
+====================================================
+
+Gunakan:
+- dark/light mode
+- responsive design
+- loading skeleton
+- toast notification
+- empty states
+- clean spacing
+- smooth animations
+- modern typography
+
+Dashboard harus terasa premium seperti SaaS modern.
+
+====================================================
+API REQUIREMENTS
+====================================================
+
+Gunakan REST API clean architecture.
+
+Endpoints:
+- /auth
+- /dashboard
+- /revenues
+- /ads
+- /expenses
+- /employees
+- /schedules
+- /attendance
+- /salaries
+
+====================================================
+SECURITY
+====================================================
+
+Tambahkan:
+- JWT auth
+- password hashing
+- role middleware
+- env variables
+- validation
+- error handling
+- CORS
+- rate limiting basic
+
+====================================================
+ERROR HANDLING
+====================================================
+
+Buat global error handler backend.
+
+Gunakan consistent JSON response:
+
+{
+  "success": true,
+  "message": "",
+  "data": {}
+}
+
+====================================================
+DOCKER SUPPORT
+====================================================
+
+Buat:
+- Dockerfile frontend
+- Dockerfile backend
+- docker-compose.yml
+
+Agar project dapat dijalankan dengan:
+
+docker compose up
+
+====================================================
+IMPORTANT DEVELOPMENT RULES
+====================================================
+
+- Jangan gunakan proprietary Replit services
+- Jangan hardcode secrets
+- Gunakan .env
+- Gunakan clean code
+- Gunakan reusable components
+- Gunakan modular architecture
+- Gunakan scalable structure
+- Jangan campur business logic dengan routes
+- Semua code harus production-oriented
+- Semua code harus mudah dipahami developer intermediate
+- Semua halaman harus responsive
+- Semua API harus tervalidasi
+- Semua tabel database harus memiliki created_at
+- Gunakan pagination pada list endpoints
+- Gunakan indexing database untuk performa
+- Gunakan loading states di frontend
+- Gunakan TypeScript di frontend
+
+====================================================
+OUTPUT YANG DIHARAPKAN
+====================================================
+
+Generate:
+- full project structure
+- backend implementation
+- frontend implementation
+- database schema
+- migration
+- authentication
+- dashboard
+- charts
+- CRUD pages
+- responsive UI
+- Docker setup
+- README setup lengkap
+- .env.example
+- seed dummy data
+
+Project harus langsung dapat:
+- dijalankan di Replit
+- dipush ke GitHub
+- di-clone ke lokal
+- dijalankan sendiri tanpa ketergantungan Replit
+- dideploy ke hosting manapun
