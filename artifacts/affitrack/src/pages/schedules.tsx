@@ -217,12 +217,12 @@ export default function Schedules() {
                     <TableCell><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
                   </TableRow>
                 ))
-              ) : data?.data.length === 0 ? (
+              ) : data?.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No schedules set for this date.</TableCell>
                 </TableRow>
               ) : (
-                data?.data.map((sch) => (
+                data?.map((sch) => (
                   <TableRow key={sch.id}>
                     <TableCell className="font-medium">{sch.employee?.name}</TableCell>
                     <TableCell>{sch.employee?.role}</TableCell>

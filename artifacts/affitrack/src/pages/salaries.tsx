@@ -40,7 +40,7 @@ export default function Salaries() {
     );
   };
 
-  const totalCalculated = data?.data.reduce((sum, sal) => sum + sal.calculatedAmount, 0) || 0;
+  const totalCalculated = data?.reduce((sum, sal) => sum + sal.calculatedAmount, 0) || 0;
 
   return (
     <Layout>
@@ -107,7 +107,7 @@ export default function Salaries() {
                     <TableCell><Skeleton className="h-4 w-24 ml-auto" /></TableCell>
                   </TableRow>
                 ))
-              ) : data?.data.length === 0 ? (
+              ) : data?.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                     No salaries calculated for this period. Click "Run Payroll Calculation" to generate.
@@ -115,7 +115,7 @@ export default function Salaries() {
                 </TableRow>
               ) : (
                 <>
-                  {data?.data.map((sal) => (
+                  {data?.map((sal) => (
                     <TableRow key={sal.id}>
                       <TableCell className="font-medium">{sal.employee?.name}</TableCell>
                       <TableCell className="capitalize">{sal.employee?.salaryType}</TableCell>
