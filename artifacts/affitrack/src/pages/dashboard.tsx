@@ -210,7 +210,7 @@ function SummaryCard({ title, value, description, loading, className = "" }: {
           </>
         ) : (
           <>
-            <div className="text-2xl font-bold font-mono">{value}</div>
+            <div className="text-xl font-bold font-mono leading-tight break-all">{value}</div>
             {description && (
               <p className="text-xs text-muted-foreground mt-1">{description}</p>
             )}
