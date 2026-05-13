@@ -48,7 +48,7 @@ export default function Dashboard() {
           <p className="text-muted-foreground">Overview of your affiliate business performance.</p>
         </div>
 
-        <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <SummaryCard 
             title="Today's Profit" 
             value={formatIDR(summary?.todayProfit)} 
@@ -74,7 +74,7 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <SummaryCard 
             title="Month Profit" 
             value={formatIDR(summary?.monthProfit)} 
@@ -210,7 +210,7 @@ function SummaryCard({ title, value, description, loading, className = "" }: {
           </>
         ) : (
           <>
-            <p className="text-base font-bold font-mono whitespace-nowrap leading-tight">
+            <p className="text-sm font-bold font-mono whitespace-nowrap leading-tight">
               {value}
             </p>
             {description && (
