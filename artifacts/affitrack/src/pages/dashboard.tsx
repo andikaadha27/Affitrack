@@ -48,7 +48,7 @@ export default function Dashboard() {
           <p className="text-muted-foreground">Overview of your affiliate business performance.</p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
           <SummaryCard 
             title="Today's Profit" 
             value={formatIDR(summary?.todayProfit)} 
@@ -74,7 +74,7 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
           <SummaryCard 
             title="Month Profit" 
             value={formatIDR(summary?.monthProfit)} 
@@ -198,26 +198,23 @@ function SummaryCard({ title, value, description, loading, className = "" }: {
   className?: string;
 }) {
   return (
-    <Card className={`min-w-0 overflow-hidden ${className}`}>
+    <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground truncate">{title}</CardTitle>
+        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-hidden">
+      <CardContent className="flex flex-col gap-1">
         {loading ? (
           <>
-            <Skeleton className="h-7 w-24 mb-1" />
+            <Skeleton className="h-7 w-28 mb-1" />
             {description && <Skeleton className="h-4 w-32" />}
           </>
         ) : (
           <>
-            <p
-              className="text-lg font-bold font-mono whitespace-nowrap overflow-hidden text-ellipsis"
-              title={value}
-            >
+            <p className="text-base font-bold font-mono whitespace-nowrap leading-tight">
               {value}
             </p>
             {description && (
-              <p className="text-xs text-muted-foreground mt-1 truncate">{description}</p>
+              <p className="text-xs text-muted-foreground whitespace-nowrap">{description}</p>
             )}
           </>
         )}
