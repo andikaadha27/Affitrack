@@ -198,21 +198,26 @@ function SummaryCard({ title, value, description, loading, className = "" }: {
   className?: string;
 }) {
   return (
-    <Card className={className}>
+    <Card className={`min-w-0 overflow-hidden ${className}`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+        <CardTitle className="text-sm font-medium text-muted-foreground truncate">{title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-hidden">
         {loading ? (
           <>
-            <Skeleton className="h-8 w-24 mb-1" />
+            <Skeleton className="h-7 w-24 mb-1" />
             {description && <Skeleton className="h-4 w-32" />}
           </>
         ) : (
           <>
-            <div className="text-xl font-bold font-mono leading-tight break-all">{value}</div>
+            <p
+              className="text-lg font-bold font-mono whitespace-nowrap overflow-hidden text-ellipsis"
+              title={value}
+            >
+              {value}
+            </p>
             {description && (
-              <p className="text-xs text-muted-foreground mt-1">{description}</p>
+              <p className="text-xs text-muted-foreground mt-1 truncate">{description}</p>
             )}
           </>
         )}
