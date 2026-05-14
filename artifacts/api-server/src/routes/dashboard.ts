@@ -30,10 +30,18 @@ router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> =
     db.select().from(revenuesTable).where(sql`${revenuesTable.date} = ${today}`),
     db.select().from(adsTable).where(sql`${adsTable.date} = ${today}`),
     // Today's present employees with their salary info
-    db.select({ employee: employeesTable })
-      .from(attendanceTable)
-      .innerJoin(employeesTable, eq(attendanceTable.employeeId, employeesTable.id))
-      .where(and(sql`${attendanceTable.date} = ${today}`, eq(attendanceTable.status, "present"))),
+    // Use DISTINCT ON to take only the latest attendance record per employee
+    db.execute(sql`
+      SELECT e.id, e.salary_type, e.salary_amount
+      FROM (
+        SELECT DISTINCT ON (employee_id) employee_id, status
+        FROM attendance
+        WHERE date = ${today}
+        ORDER BY employee_id, created_at DESC
+      ) latest
+      JOIN employees e ON latest.employee_id = e.id
+      WHERE latest.status = 'present'
+    `),
     db.select().from(revenuesTable).where(
       and(gte(revenuesTable.date, monthStart), lte(revenuesTable.date, today))
     ),
@@ -75,16 +83,17 @@ router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> =
   const sumTotal = (arr: { totalWithFee: string }[]) =>
     arr.reduce((acc, r) => acc + parseFloat(r.totalWithFee), 0);
 
-  // Calculate today's salary cost from employees present today
-  const todaySalary = todayPresentAttendance.reduce((acc, { employee }) => {
-    const rate = parseFloat(employee.salaryAmount);
-    if (employee.salaryType === "daily") {
-      return acc + rate;
-    } else {
-      // Monthly employee: prorate to daily cost
-      return acc + rate / daysInMonth;
-    }
-  }, 0);
+  // Calculate today's salary cost from employees present today (DISTINCT ON latest record)
+  // db.execute returns raw rows with snake_case keys
+  const todaySalary = (todayPresentAttendance.rows as { salary_type: string; salary_amount: string }[])
+    .reduce((acc, emp) => {
+      const rate = parseFloat(emp.salary_amount);
+      if (emp.salary_type === "daily") {
+        return acc + rate;
+      } else {
+        return acc + rate / daysInMonth;
+      }
+    }, 0);
 
   const todayRevenue = sum(todayRevenues);
   const todayActualRevenue = sumActual(todayRevenues);

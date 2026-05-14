@@ -80,6 +80,11 @@ router.post("/attendance", requireAuth, async (req, res): Promise<void> => {
 
   const { employeeId, date, status } = parsed.data;
 
+  // Delete any existing record for this employee on this date before inserting
+  await db.delete(attendanceTable).where(
+    and(eq(attendanceTable.date, date), eq(attendanceTable.employeeId, employeeId))
+  );
+
   const [attendance] = await db.insert(attendanceTable).values({ employeeId, date, status }).returning();
   const [employee] = await db.select().from(employeesTable).where(eq(employeesTable.id, employeeId));
 
