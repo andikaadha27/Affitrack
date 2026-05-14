@@ -6,13 +6,20 @@ import { requireAuth } from "../middlewares/auth";
 
 const router = Router();
 
-router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> => {
-  const today = new Date().toISOString().split("T")[0];
+router.get("/dashboard/summary", requireAuth, async (req, res): Promise<void> => {
+  // Allow viewing summary for a specific date (defaults to today)
+  const targetDate = typeof req.query.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(req.query.date)
+    ? req.query.date
+    : new Date().toISOString().split("T")[0];
+
+  const targetDay = new Date(targetDate + "T00:00:00Z");
   const now = new Date();
-  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
-  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split("T")[0];
-  const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split("T")[0];
-  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const monthStart = `${targetDay.getUTCFullYear()}-${String(targetDay.getUTCMonth() + 1).padStart(2, "0")}-01`;
+  const lastMonthStart = new Date(Date.UTC(targetDay.getUTCFullYear(), targetDay.getUTCMonth() - 1, 1)).toISOString().split("T")[0];
+  const lastMonthEnd = new Date(Date.UTC(targetDay.getUTCFullYear(), targetDay.getUTCMonth(), 0)).toISOString().split("T")[0];
+  const daysInMonth = new Date(Date.UTC(targetDay.getUTCFullYear(), targetDay.getUTCMonth() + 1, 0)).getUTCDate();
+  // Month end is the target date (don't go beyond it)
+  const monthEnd = targetDate;
 
   const [
     todayRevenues,
@@ -27,34 +34,33 @@ router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> =
     lastMonthExpenses,
     lastMonthSalaries,
   ] = await Promise.all([
-    db.select().from(revenuesTable).where(sql`${revenuesTable.date} = ${today}`),
-    db.select().from(adsTable).where(sql`${adsTable.date} = ${today}`),
-    // Today's present employees with their salary info
-    // Use DISTINCT ON to take only the latest attendance record per employee
+    db.select().from(revenuesTable).where(sql`${revenuesTable.date} = ${targetDate}`),
+    db.select().from(adsTable).where(sql`${adsTable.date} = ${targetDate}`),
+    // Use DISTINCT ON to take only the latest attendance record per employee for that date
     db.execute(sql`
       SELECT e.id, e.salary_type, e.salary_amount
       FROM (
         SELECT DISTINCT ON (employee_id) employee_id, status
         FROM attendance
-        WHERE date = ${today}
+        WHERE date = ${targetDate}
         ORDER BY employee_id, created_at DESC
       ) latest
       JOIN employees e ON latest.employee_id = e.id
       WHERE latest.status = 'present'
     `),
     db.select().from(revenuesTable).where(
-      and(gte(revenuesTable.date, monthStart), lte(revenuesTable.date, today))
+      and(gte(revenuesTable.date, monthStart), lte(revenuesTable.date, monthEnd))
     ),
     db.select().from(adsTable).where(
-      and(gte(adsTable.date, monthStart), lte(adsTable.date, today))
+      and(gte(adsTable.date, monthStart), lte(adsTable.date, monthEnd))
     ),
     db.select().from(expensesTable).where(
-      and(gte(expensesTable.date, monthStart), lte(expensesTable.date, today))
+      and(gte(expensesTable.date, monthStart), lte(expensesTable.date, monthEnd))
     ),
     db.select().from(salariesTable).where(
       and(
-        sql`${salariesTable.month} = ${now.getMonth() + 1}`,
-        sql`${salariesTable.year} = ${now.getFullYear()}`
+        sql`${salariesTable.month} = ${targetDay.getUTCMonth() + 1}`,
+        sql`${salariesTable.year} = ${targetDay.getUTCFullYear()}`
       )
     ),
     db.select().from(revenuesTable).where(
@@ -68,8 +74,8 @@ router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> =
     ),
     db.select().from(salariesTable).where(
       and(
-        sql`${salariesTable.month} = ${now.getMonth()}`,
-        sql`${salariesTable.year} = ${now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear()}`
+        sql`${salariesTable.month} = ${targetDay.getUTCMonth() === 0 ? 12 : targetDay.getUTCMonth()}`,
+        sql`${salariesTable.year} = ${targetDay.getUTCMonth() === 0 ? targetDay.getUTCFullYear() - 1 : targetDay.getUTCFullYear()}`
       )
     ),
   ]);
@@ -83,16 +89,11 @@ router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> =
   const sumTotal = (arr: { totalWithFee: string }[]) =>
     arr.reduce((acc, r) => acc + parseFloat(r.totalWithFee), 0);
 
-  // Calculate today's salary cost from employees present today (DISTINCT ON latest record)
-  // db.execute returns raw rows with snake_case keys
+  // Calculate salary cost from employees present on the target date
   const todaySalary = (todayPresentAttendance.rows as { salary_type: string; salary_amount: string }[])
     .reduce((acc, emp) => {
       const rate = parseFloat(emp.salary_amount);
-      if (emp.salary_type === "daily") {
-        return acc + rate;
-      } else {
-        return acc + rate / daysInMonth;
-      }
+      return acc + (emp.salary_type === "daily" ? rate : rate / daysInMonth);
     }, 0);
 
   const todayRevenue = sum(todayRevenues);

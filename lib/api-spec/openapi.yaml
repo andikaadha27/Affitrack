@@ -106,7 +106,13 @@ paths:
     get:
       operationId: getDashboardSummary
       tags: [dashboard]
-      summary: Get dashboard summary for today and this month
+      summary: Get dashboard summary for today (or a specific date) and this month
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+          description: "Date in YYYY-MM-DD format (defaults to today)"
       responses:
         "200":
           description: OK

@@ -55,8 +55,15 @@ export const GetMeResponse = zod.object({
 });
 
 /**
- * @summary Get dashboard summary for today and this month
+ * @summary Get dashboard summary for today (or a specific date) and this month
  */
+export const GetDashboardSummaryQueryParams = zod.object({
+  date: zod.coerce
+    .string()
+    .optional()
+    .describe("Date in YYYY-MM-DD format (defaults to today)"),
+});
+
 export const GetDashboardSummaryResponse = zod.object({
   todayRevenue: zod.number(),
   todayActualRevenue: zod.number(),

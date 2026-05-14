@@ -38,6 +38,7 @@ export * from "./expense";
 export * from "./expenseInput";
 export * from "./expenseList";
 export * from "./expenseUpdate";
+export * from "./getDashboardSummaryParams";
 export * from "./getDashboardTrendsParams";
 export * from "./getDashboardTrendsPeriod";
 export * from "./healthStatus";

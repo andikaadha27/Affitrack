@@ -446,6 +446,13 @@ export interface ActivityItem {
   createdAt: string;
 }
 
+export type GetDashboardSummaryParams = {
+  /**
+   * Date in YYYY-MM-DD format (defaults to today)
+   */
+  date?: string;
+};
+
 export type GetDashboardTrendsParams = {
   /**
    * Time period for trend data
