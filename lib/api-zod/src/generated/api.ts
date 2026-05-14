@@ -62,6 +62,7 @@ export const GetDashboardSummaryResponse = zod.object({
   todayActualRevenue: zod.number(),
   todayAds: zod.number(),
   todayAdsWithFee: zod.number(),
+  todaySalary: zod.number(),
   todayProfit: zod.number(),
   monthRevenue: zod.number(),
   monthActualRevenue: zod.number().optional(),

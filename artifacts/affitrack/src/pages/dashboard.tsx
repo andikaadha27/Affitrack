@@ -48,28 +48,35 @@ export default function Dashboard() {
           <p className="text-muted-foreground">Overview of your affiliate business performance.</p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           <SummaryCard 
-            title="Today's Profit" 
+            title="Profit Hari Ini" 
             value={formatIDR(summary?.todayProfit)} 
+            description="Revenue - Iklan - Gaji"
             loading={loadingSummary}
             className="border-primary/50 bg-primary/5"
           />
           <SummaryCard 
-            title="Today's Revenue" 
+            title="Revenue Hari Ini" 
             value={formatIDR(summary?.todayRevenue)} 
             loading={loadingSummary} 
           />
           <SummaryCard 
-            title="Today's Ads Spend" 
+            title="Iklan Hari Ini" 
             value={formatIDR(summary?.todayAdsWithFee)} 
-            description={`Base: ${formatIDR(summary?.todayAds)} + 11% fee`}
+            description={`Base: ${formatIDR(summary?.todayAds)} + 11%`}
             loading={loadingSummary} 
           />
           <SummaryCard 
-            title="Month Profit Margin" 
+            title="Gaji Hari Ini" 
+            value={formatIDR(summary?.todaySalary)} 
+            description="Karyawan hadir hari ini"
+            loading={loadingSummary}
+          />
+          <SummaryCard 
+            title="Profit Margin Bulan Ini" 
             value={formatPercent(summary?.profitMargin)} 
-            description={`${formatPercent(summary?.growthRate)} vs last month`}
+            description={`${formatPercent(summary?.growthRate)} vs bulan lalu`}
             loading={loadingSummary} 
           />
         </div>

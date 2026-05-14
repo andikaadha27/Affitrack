@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { and, gte, lte, sql } from "drizzle-orm";
-import { db, revenuesTable, adsTable, expensesTable, salariesTable } from "@workspace/db";
+import { and, gte, lte, sql, eq } from "drizzle-orm";
+import { db, revenuesTable, adsTable, expensesTable, salariesTable, attendanceTable, employeesTable } from "@workspace/db";
 import { GetDashboardTrendsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/auth";
 
@@ -12,10 +12,12 @@ router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> =
   const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
   const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split("T")[0];
   const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split("T")[0];
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
   const [
     todayRevenues,
     todayAds,
+    todayPresentAttendance,
     monthRevenues,
     monthAds,
     monthExpenses,
@@ -27,6 +29,11 @@ router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> =
   ] = await Promise.all([
     db.select().from(revenuesTable).where(sql`${revenuesTable.date} = ${today}`),
     db.select().from(adsTable).where(sql`${adsTable.date} = ${today}`),
+    // Today's present employees with their salary info
+    db.select({ employee: employeesTable })
+      .from(attendanceTable)
+      .innerJoin(employeesTable, eq(attendanceTable.employeeId, employeesTable.id))
+      .where(and(sql`${attendanceTable.date} = ${today}`, eq(attendanceTable.status, "present"))),
     db.select().from(revenuesTable).where(
       and(gte(revenuesTable.date, monthStart), lte(revenuesTable.date, today))
     ),
@@ -68,11 +75,22 @@ router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> =
   const sumTotal = (arr: { totalWithFee: string }[]) =>
     arr.reduce((acc, r) => acc + parseFloat(r.totalWithFee), 0);
 
+  // Calculate today's salary cost from employees present today
+  const todaySalary = todayPresentAttendance.reduce((acc, { employee }) => {
+    const rate = parseFloat(employee.salaryAmount);
+    if (employee.salaryType === "daily") {
+      return acc + rate;
+    } else {
+      // Monthly employee: prorate to daily cost
+      return acc + rate / daysInMonth;
+    }
+  }, 0);
+
   const todayRevenue = sum(todayRevenues);
   const todayActualRevenue = sumActual(todayRevenues);
   const todayAdsAmount = sum(todayAds);
   const todayAdsWithFee = sumTotal(todayAds);
-  const todayProfit = (todayActualRevenue || todayRevenue) - todayAdsWithFee;
+  const todayProfit = (todayActualRevenue || todayRevenue) - todayAdsWithFee - todaySalary;
 
   const monthRevenue = sum(monthRevenues);
   const monthActualRevenue = sumActual(monthRevenues);
@@ -96,6 +114,7 @@ router.get("/dashboard/summary", requireAuth, async (_req, res): Promise<void> =
     todayActualRevenue,
     todayAds: todayAdsAmount,
     todayAdsWithFee,
+    todaySalary,
     todayProfit,
     monthRevenue,
     monthActualRevenue,

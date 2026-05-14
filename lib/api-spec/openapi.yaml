@@ -824,7 +824,7 @@ components:
     # DASHBOARD
     DashboardSummary:
       type: object
-      required: [todayRevenue, todayActualRevenue, todayAds, todayAdsWithFee, todayProfit, monthRevenue, monthProfit, monthSalary, monthExpenses, profitMargin, growthRate]
+      required: [todayRevenue, todayActualRevenue, todayAds, todayAdsWithFee, todaySalary, todayProfit, monthRevenue, monthProfit, monthSalary, monthExpenses, profitMargin, growthRate]
       properties:
         todayRevenue:
           type: number
@@ -833,6 +833,8 @@ components:
         todayAds:
           type: number
         todayAdsWithFee:
+          type: number
+        todaySalary:
           type: number
         todayProfit:
           type: number

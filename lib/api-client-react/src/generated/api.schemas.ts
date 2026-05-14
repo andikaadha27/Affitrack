@@ -54,6 +54,7 @@ export interface DashboardSummary {
   todayActualRevenue: number;
   todayAds: number;
   todayAdsWithFee: number;
+  todaySalary: number;
   todayProfit: number;
   monthRevenue: number;
   monthActualRevenue?: number;
