@@ -58,7 +58,8 @@ export default function Dashboard() {
           />
           <SummaryCard 
             title="Revenue Hari Ini" 
-            value={formatIDR(summary?.todayRevenue)} 
+            value={formatIDR(summary?.todayActualRevenue)} 
+            description={`Revenue: ${formatIDR(summary?.todayRevenue)}`}
             loading={loadingSummary} 
           />
           <SummaryCard 
